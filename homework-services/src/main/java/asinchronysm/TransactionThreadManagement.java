@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import businessobjects.Transaction;
 import enums.TransactionStatus;
 import fixedresources.Resources;
 
@@ -18,12 +17,11 @@ public class TransactionThreadManagement {
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
 		List<Future<TransactionStatus>> resultList = new ArrayList<>();
-		try{			
+		try{
+			//resources me deberia avisar que tiene contenido para procesar
 			while ( !Resources.TRANSACTION_QUEUE.isEmpty()) {
 				
-				Transaction transaction = Resources.TRANSACTION_QUEUE.removeFirst();
-				
-				TransactionCallable operation = new TransactionCallable(transaction);
+				TransactionCallable operation = Resources.TRANSACTION_QUEUE.removeFirst();
 				
 				Future<TransactionStatus> result = executor.submit(operation);
 				

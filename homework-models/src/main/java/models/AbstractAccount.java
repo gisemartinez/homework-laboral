@@ -1,5 +1,7 @@
 package models;
 
+import java.math.BigDecimal;
+
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.data.annotation.Id;
 
@@ -9,23 +11,23 @@ import enums.Country;
 public abstract class AbstractAccount {
 	
 	@Id
-	private int id;
+	private Integer id;
 	
 	private Bank bank;
 	private Country originCountry;
-	private Long credit;
+	private BigDecimal credit;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getCredit() {
+	public BigDecimal getCredit() {
 		return credit;
 	}
-	public void setCredit(Long credit) {
+	public void setCredit(BigDecimal credit) {
 		this.credit = credit;
 	}
 	public Bank getBank() {

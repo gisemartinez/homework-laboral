@@ -1,5 +1,6 @@
 package asinchronysm;
 
+import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class TransactionCallable implements Callable<TransactionStatus> {
 
 		boolean successfull = false;
 
-		Long substraction = transaction.calcularImpuesto() + transaction.getMonto();
-		Long addition = transaction.getMonto();
+		BigDecimal substraction = transaction.calcularImpuesto().add(transaction.getMonto());
+		BigDecimal addition = transaction.getMonto();
 		
 		try {
 
@@ -39,7 +40,7 @@ public class TransactionCallable implements Callable<TransactionStatus> {
 			Account destinyAccount = accountService.getAccountById(transaction.getOriginAccount().getId());
 
 			if (originAccount.isDebitLessThanActualCredit(substraction)) {
-				accountService.updateCredit(originAccount.getId(), -substraction);
+				accountService.updateCredit(originAccount.getId(), substraction.negate());
 				accountService.updateCredit(destinyAccount.getId(), addition);
 				successfull = true;
 			}

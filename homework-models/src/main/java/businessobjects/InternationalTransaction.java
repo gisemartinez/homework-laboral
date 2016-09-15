@@ -1,13 +1,15 @@
 package businessobjects;
 
+import java.math.BigDecimal;
+
 public class InternationalTransaction extends Transaction {
 	
 
-	public static final Long fixedTax = Long.valueOf(5)/Long.valueOf(100);
+	public static final BigDecimal fixedTax = BigDecimal.valueOf(5).divide(BigDecimal.valueOf(100));
 
 	@Override
-	public synchronized Long calcularImpuesto() {
-		return  this.getMonto() * fixedTax;
+	public synchronized BigDecimal calcularImpuesto() {
+		return  this.getMonto().multiply(fixedTax);
 	}
 
 

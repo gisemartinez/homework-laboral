@@ -1,12 +1,14 @@
 package models;
 
+import java.math.BigDecimal;
+
 import businessobjects.Account;
 
 public abstract class AbstractTransaction {
 	
 	private Account originAccount;
 	private Account destinationAccount;
-	private Long monto;
+	private BigDecimal monto;
 	
 	
 	public Account getOriginAccount() {
@@ -21,10 +23,10 @@ public abstract class AbstractTransaction {
 	public void setDestinationAccount(Account destinationAccount) {
 		this.destinationAccount = destinationAccount;
 	}
-	public Long getMonto() {
+	public BigDecimal getMonto() {
 		return monto;
 	}
-	public void setMonto(Long monto) {
+	public void setMonto(BigDecimal monto) {
 		this.monto = monto;
 	}
 

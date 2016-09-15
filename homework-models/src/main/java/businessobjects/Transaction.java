@@ -1,5 +1,7 @@
 package businessobjects;
 
+import java.math.BigDecimal;
+
 import org.springframework.core.style.ToStringCreator;
 
 import enums.TransactionStatus;
@@ -10,7 +12,7 @@ public abstract class Transaction extends AbstractTransaction{
 	
 	private TransactionStatus status;
 	
-	public abstract Long calcularImpuesto();
+	public abstract BigDecimal calcularImpuesto();
 
 	public TransactionStatus getStatus() {
 		return status;
