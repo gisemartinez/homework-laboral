@@ -1,12 +1,11 @@
 package fixedresources;
 
 import java.math.BigDecimal;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import asinchronysm.TransactionCallable;
+import asinchronysm.TransactionConsumerCallable;
 import businessobjects.Account;
 import enums.Bank;
 import enums.Country;
@@ -15,7 +14,7 @@ public class Resources {
 	
 	public static List<Account> ACCOUNTS = loadInMemoryData();
 	public static final Country MY_COUNTRY = Country.ARGENTINA;
-	public static final Deque<TransactionCallable> TRANSACTION_QUEUE = new ArrayDeque<>();
+	public static final LinkedBlockingQueue<TransactionConsumerCallable> TRANSACTION_QUEUE = new LinkedBlockingQueue<>();
 	
 	
 	

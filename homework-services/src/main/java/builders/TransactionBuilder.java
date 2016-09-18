@@ -7,6 +7,7 @@ import javax.naming.ServiceUnavailableException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import businessobjects.Account;
 import businessobjects.InternationalTransaction;
@@ -17,22 +18,28 @@ import fixedresources.Resources;
 import services.AccountService;
 import throwable.InexistentAccount;
 
+/*
+ * Caso ideal : Que me anduviera el autowired. Como no es un controller, 
+ * y lo instancio para usarlo, spring no puede hacer la inyeccion de dependencia. 
+ */
 public class TransactionBuilder {
 
-	@Autowired
-	private AccountService accountService;
 	public final static Logger LOGGER = LogManager.getLogger(TransactionBuilder.class);
 	private Account accountOrigin;
 	private Account accountDestiny;
 	private BigDecimal amount;
 	private Transaction transaction;
-
-	public TransactionBuilder(BigDecimal amount) {
+	
+	@Autowired
+	private AccountService accountService;
+	
+	public TransactionBuilder buildWithAmount(BigDecimal amount) {
 		this.amount = amount;
 		this.accountOrigin = new Account();
 		this.accountDestiny = new Account();
-	}
+		return this;
 
+	}
 	public TransactionBuilder buildWithOriginAccount(int id) throws InexistentAccount {
 
 		try {
@@ -41,11 +48,11 @@ public class TransactionBuilder {
 			LOGGER.error(e.getMessage());
 			throw e;
 		}
-		
-		if(!accountExists(this.accountOrigin)){
+
+		if (!accountExists(this.accountOrigin)) {
 			throw new InexistentAccount(ErrorMessages.CUENTA_ORIGEN_INEXISTENTE);
 		}
-		
+
 		return this;
 	}
 
@@ -57,26 +64,24 @@ public class TransactionBuilder {
 			LOGGER.error(e.getMessage());
 			throw e;
 		}
-		
-		if(!accountExists(this.accountOrigin)){
+
+		if (!accountExists(this.accountOrigin)) {
 			throw new InexistentAccount(ErrorMessages.CUENTA_DESTINO_INEXISTENTE);
 		}
-		
+
 		return this;
 	}
 
 	public Transaction build() {
 
-		if (accountExists(this.accountOrigin) 
-				&& accountExists(this.accountDestiny)) {
+		if (accountExists(this.accountOrigin) && accountExists(this.accountDestiny)) {
 
-			if (isNationalTransaction(this.accountOrigin) 
-					&& isNationalTransaction(this.accountDestiny)) {
+			if (isNationalTransaction(this.accountOrigin) && isNationalTransaction(this.accountDestiny)) {
 
 				this.transaction = setData(new NationalTransaction());
-			
+
 			} else {
-			
+
 				this.transaction = setData(new InternationalTransaction());
 			}
 		} else {

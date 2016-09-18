@@ -4,39 +4,29 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import asinchronysm.TransactionCallable;
 import asinchronysm.TransactionThreadManagement;
-import builders.TransactionBuilder;
 import dtos.TransactionDto;
-import fixedresources.Resources;
+import enums.TransactionStatus;
 
 @Component
 public class TransactionService {
 	public final static Logger LOGGER = LogManager.getLogger(TransactionService.class);
 
-	public void putInQueue(TransactionDto transactionDto) {
-
-		TransactionBuilder transactionBuilder = new TransactionBuilder(transactionDto.getMonto());
-
-		try {
-			transactionBuilder.buildWithDestinyAccount(transactionDto.getDestinationAccount().getId());
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
+	public TransactionStatus receiveTransactions(TransactionDto dto) {
+		
+		TransactionThreadManagement transactionThreadManagement = new TransactionThreadManagement();
 		
 		try {
-			transactionBuilder.buildWithOriginAccount(transactionDto.getOriginAccount().getId());
+			transactionThreadManagement.queingTransactions(dto);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		TransactionCallable callable = new TransactionCallable(transactionBuilder.build());
-		Resources.TRANSACTION_QUEUE.addLast(callable);
-		LOGGER.debug(Resources.TRANSACTION_QUEUE.size());
-
-	}
-
-	public void operate() {
-		TransactionThreadManagement.main(null);
+		
+		//TODO: Return some useful object
+		return null;
+		
+		
 	}
 
 }

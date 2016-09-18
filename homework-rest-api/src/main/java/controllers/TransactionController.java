@@ -23,16 +23,28 @@ public class TransactionController {
 
 	public final static Logger LOGGER = LogManager.getLogger(TransactionController.class);
 	
-	
+	/*
+	 * Cada transacción inicia un nuevo thread para insertar en la lista de 
+	 * transacciones a procesar
+	 */
 	@RequestMapping(value = "/transaction", method = RequestMethod.POST)
 	public ResponseEntity<Void> receiveTransaction(@RequestBody TransactionDto transaction){
 	
 		ResponseEntity<Void> status;
 		try{
 			LOGGER.debug(transaction);
-			transactionService.putInQueue(transaction);
-			transactionService.operate();
-			status = new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+			
+			enums.TransactionStatus response = transactionService.receiveTransactions(transaction);
+			if(response.equals(enums.TransactionStatus.ERROR_INTERNO_ANTES_DE_ENCOLARSE)){
+				status =  new ResponseEntity<Void>(HttpStatus.FORBIDDEN);				
+			}else if(response.equals(enums.TransactionStatus.ERROR_EN_PARAMETROS_RECIBIDOS)){
+				status =  new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);				
+			}else if(response.equals(enums.TransactionStatus.INSERTADA_CORRECTAMENTE)){
+				status =  new ResponseEntity<Void>(HttpStatus.ACCEPTED);				
+			}else{
+				status = new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);			
+			}
+
 			
 		}catch(Exception e){
 			status = new ResponseEntity<Void>(HttpStatus.INSUFFICIENT_STORAGE);
@@ -44,9 +56,9 @@ public class TransactionController {
 	}
 	
 	@RequestMapping(value = "/transaction", method = RequestMethod.GET)
-	public ResponseEntity<Void> getTransactions(){
-		LOGGER.debug("Entrando a metodo GET");
-        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+	public ResponseEntity<TransactionDto> getTransactions(){
+		//TODO: endpoint para mostrar transacciones encoladas
+        return new ResponseEntity<TransactionDto>(HttpStatus.ACCEPTED);
 		
 	}
 }

@@ -10,14 +10,14 @@ import businessobjects.Transaction;
 import enums.TransactionStatus;
 import services.AccountService;
 
-public class TransactionCallable implements Callable<TransactionStatus> {
+public class TransactionConsumerCallable implements Callable<TransactionStatus> {
 
 	@Autowired
 	private AccountService accountService;
 
 	Transaction transaction;
 
-	public TransactionCallable(Transaction transaction) {
+	public TransactionConsumerCallable(Transaction transaction) {
 		this.transaction = transaction;
 	}
 
@@ -26,7 +26,7 @@ public class TransactionCallable implements Callable<TransactionStatus> {
 
 		return succesfullOperation(transaction) ? TransactionStatus.FINALIZADA_OK : TransactionStatus.FINALIZADA_NOK;
 	}
-
+	//TODO: Pulir la lógica. Es poco legible.
 	private synchronized boolean succesfullOperation(Transaction transaction) {
 
 		boolean successfull = false;

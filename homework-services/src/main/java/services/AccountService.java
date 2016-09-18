@@ -5,14 +5,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import businessobjects.Account;
 
 
-@Component
+@Service
 public class AccountService {
-	
-	
 	
 	public List<Account> getAccounts(){
 		return fixedresources.Resources.ACCOUNTS;
