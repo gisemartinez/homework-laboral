@@ -7,7 +7,6 @@ import javax.naming.ServiceUnavailableException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import businessobjects.Account;
 import businessobjects.InternationalTransaction;
@@ -23,7 +22,7 @@ import throwable.InexistentAccount;
  * y lo instancio para usarlo, spring no puede hacer la inyeccion de dependencia. 
  */
 public class TransactionBuilder {
-
+	
 	public final static Logger LOGGER = LogManager.getLogger(TransactionBuilder.class);
 	private Account accountOrigin;
 	private Account accountDestiny;
@@ -65,7 +64,7 @@ public class TransactionBuilder {
 			throw e;
 		}
 
-		if (!accountExists(this.accountOrigin)) {
+		if (!accountExists(this.accountDestiny)) {
 			throw new InexistentAccount(ErrorMessages.CUENTA_DESTINO_INEXISTENTE);
 		}
 

@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import builders.BuilderFactory;
 import builders.TransactionBuilder;
 import businessobjects.Transaction;
 import dtos.TransactionDto;
@@ -16,10 +17,11 @@ public class TransactionProductorCallable implements Callable<TransactionStatus>
 	public final static Logger LOGGER = LogManager.getLogger(TransactionProductorCallable.class);
 
 	private Transaction transaction;
-	
-	
-	public TransactionProductorCallable(TransactionDto transactionDto) {
 
+	private BuilderFactory builderFactory;
+
+	public TransactionProductorCallable(TransactionDto transactionDto,BuilderFactory builderFactory) {
+		this.builderFactory = builderFactory;
 		try {
 			this.transaction = buildTransaction(transactionDto);
 		} catch (Exception e) {
@@ -36,7 +38,7 @@ public class TransactionProductorCallable implements Callable<TransactionStatus>
 
 			callable = new TransactionConsumerCallable(this.transaction);
 			Resources.TRANSACTION_QUEUE.offer(callable);
-			status = TransactionStatus.INSERTADA_CORRECTAMENTE;
+			status = TransactionStatus.FINALIZA_ENCOLAMIENTO;
 
 		} catch (NullPointerException e) {
 			LOGGER.error(e);
@@ -54,8 +56,8 @@ public class TransactionProductorCallable implements Callable<TransactionStatus>
 	 * excepciones si las cuentas involucradas no existen
 	 */
 	private synchronized Transaction buildTransaction(TransactionDto transactionDto) throws Exception {
-
-		TransactionBuilder transactionBuilder = new TransactionBuilder();
+		
+		TransactionBuilder transactionBuilder = builderFactory.getObject();
 		transactionBuilder.buildWithAmount(transactionDto.getMonto());
 
 		try {
