@@ -1,4 +1,4 @@
-# Problema del consumidor y productor. 
+# Implementación de pattern consumidor/productor. 
 
 
 
