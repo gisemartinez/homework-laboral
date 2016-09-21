@@ -1,14 +1,12 @@
 package util;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 
 import businessobjects.Account;
-import businessobjects.Transaction;
 import enums.TransactionStatus;
 
 public class TransactionToText {
@@ -19,13 +17,6 @@ public class TransactionToText {
 	private TransactionStatus transactionStatus;
 	public static final Path PATH = Paths.get("src/main/resources/transacciones.txt");
 			
-	public TransactionToText(String cuentaOrigen, String cuentaDestino, TransactionStatus transactionStatus) {
-		this.fecha = new Date();
-		this.cuentaOrigen = cuentaOrigen;
-		this.cuentaDestino = cuentaDestino;
-		this.transactionStatus = transactionStatus;
-	}
-	
 	public TransactionToText(Account cuentaOrigen, Account cuentaDestino, TransactionStatus transactionStatus) {
 		this.fecha = new Date();
 		this.cuentaOrigen = cuentaOrigen.toString();
@@ -33,21 +24,19 @@ public class TransactionToText {
 		this.transactionStatus = transactionStatus;
 	}
 	
-	public TransactionToText(Transaction transaction, TransactionStatus transactionStatus) {
-		this.fecha = new Date();
-		this.cuentaOrigen = transaction.getOriginAccount().toString();
-		this.cuentaDestino = transaction.getDestinationAccount().toString();
-		this.transactionStatus = transactionStatus;
-	}
-	public void writeFile() throws IOException {
-
-		try (BufferedWriter writer = Files.newBufferedWriter(PATH)) {
+	public void writeFile(){
+		try {
+			BufferedWriter writer = Files.newBufferedWriter(PATH);
 			writer.write(this.fecha.toString() + "\t");
 			writer.write(this.cuentaOrigen + "\t");
 			writer.write(this.cuentaDestino + "\t");
 			writer.write(this.transactionStatus + "\t");
 			writer.write("\n");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		 	
+		
 	}
 
 	public String getCuentaOrigen() {

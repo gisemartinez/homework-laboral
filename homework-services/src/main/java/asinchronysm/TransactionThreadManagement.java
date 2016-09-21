@@ -1,7 +1,5 @@
 package asinchronysm;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,13 +36,10 @@ public class TransactionThreadManagement {
 
 		TransactionStatus queuing = TransactionStatus.INICIA_ENCOLAMIENTO;
 
-		TransactionToText transactionToText = new TransactionToText(dto.getDestinationAccount(), dto.getOriginAccount(), queuing);
+		TransactionToText transactionToText = new TransactionToText(dto.getOriginAccount(), dto.getDestinationAccount(),
+				queuing);
 
-		try {
-			transactionToText.writeFile();
-		} catch (Exception e) {
-			LOGGER.error(e);
-		}
+		transactionToText.writeFile();
 
 		try {
 
@@ -53,51 +48,43 @@ public class TransactionThreadManagement {
 			result = executeProductor.submit(transactionCallable);
 
 		} catch (Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 		} finally {
+
 			transactionToText.setTransactionStatus(result.get());
-			LOGGER.info("Status : " + result.get() +" && Task done is " + result.isDone());
+			transactionToText.writeFile();
+			LOGGER.info("Status : " + result.get() + " && Task done is " + result.isDone());
+
 		}
+
 		return result.get();
-		
-		// // Revisar: El shutdown debería estar temporizado, e incluso
-		// // podría no tener que estar
-		// executeProductor.shutdown();
-		// return queuing;
 	}
 
-	public void executeTransactions() {
+	// TODO: Debería devolver una transaccionstatus?
+	public void executeTransactions() throws InterruptedException, ExecutionException {
 
-		List<Future<TransactionStatus>> resultList = new ArrayList<>();
+		TransactionConsumerCallable operation;
+
+		Future<TransactionStatus> result = null;
 
 		try {
-			// resources me deberia avisar que tiene contenido para procesar
-			// while (!Resources.TRANSACTION_QUEUE.isEmpty()) {
+			// get y take, esperan a que haya contenido en la queue
+			operation = Resources.TRANSACTION_QUEUE.take();
 
-			TransactionConsumerCallable operation = Resources.TRANSACTION_QUEUE.take();
+			result = executeConsumer.submit(operation);
 
-			Future<TransactionStatus> result = executeConsumer.submit(operation);
-
-			resultList.add(result);
-
-			// }
 		} catch (Exception e) {
+
 			e.printStackTrace();
+
+		} finally {
+
+			LOGGER.info("Status : " + result.get() + " && Task done is " + result.isDone());
+
 		}
 
-		for (Future<TransactionStatus> future : resultList) {
-			try {
-				System.out.println(
-						"Future result is - " + " - " + future.get() + "; And Task done is " + future.isDone());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-		}
-
-		executeConsumer.shutdown();
+		//executeConsumer.shutdown();
 	}
 }

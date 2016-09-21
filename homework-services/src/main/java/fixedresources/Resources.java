@@ -1,7 +1,7 @@
 package fixedresources;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,9 +22,9 @@ public class Resources {
 		Account accountA = new Account();		
 		Account accountB = new Account();
 		Account accountC = new Account();
-		accountA.setId(1);
-		accountB.setId(2);;
-		accountC.setId(3);;
+		accountA.setId(0);
+		accountB.setId(1);;
+		accountC.setId(2);;
 		accountA.setBank(Bank.ICBC);
 		accountB.setBank(Bank.ICBC);
 		accountC.setBank(Bank.JPMORGAN);
@@ -34,7 +34,11 @@ public class Resources {
 		accountA.setCredit(BigDecimal.valueOf(10000));
 		accountB.setCredit(BigDecimal.valueOf(1000));
 		accountC.setCredit(BigDecimal.valueOf(100));
-		return Arrays.asList(accountA,accountB,accountC);
+		List<Account> list = new ArrayList<>();
+		list.add(accountA.getId(), accountA);
+		list.add(accountB.getId(), accountB);
+		list.add(accountC.getId(), accountC);
+		return list;
 	}
 	
 }

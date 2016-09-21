@@ -3,13 +3,19 @@ package asinchronysm;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import businessobjects.Account;
 import businessobjects.Transaction;
 import enums.TransactionStatus;
 import services.AccountService;
+import util.TransactionToText;
 
 public class TransactionConsumerCallable implements Callable<TransactionStatus> {
-
+	
+	public final static Logger LOGGER = LogManager.getLogger(TransactionConsumerCallable.class);
+	
 	private AccountService accountService;
 
 	Transaction transaction;
@@ -26,7 +32,18 @@ public class TransactionConsumerCallable implements Callable<TransactionStatus> 
 	}
 	//TODO: Pulir la lógica. Es poco legible.
 	private synchronized boolean succesfullOperation(Transaction transaction) {
+		
+		
+		TransactionStatus operation = TransactionStatus.INICIA_PROCESAMIENTO;
 
+		TransactionToText transactionToText = new TransactionToText(transaction.getOriginAccount(), transaction.getDestinationAccount(), operation);
+
+		try {
+			transactionToText.writeFile();
+		} catch (Exception e) {
+			LOGGER.error(e);
+		}
+		
 		boolean successfull = false;
 
 		BigDecimal substraction = transaction.calcularImpuesto().add(transaction.getMonto());
@@ -34,8 +51,8 @@ public class TransactionConsumerCallable implements Callable<TransactionStatus> 
 		
 		try {
 
-			Account originAccount = accountService.getAccountById(transaction.getOriginAccount().getId());
-			Account destinyAccount = accountService.getAccountById(transaction.getOriginAccount().getId());
+			Account originAccount = transaction.getOriginAccount();
+			Account destinyAccount = transaction.getDestinationAccount();
 
 			if (originAccount.isDebitLessThanActualCredit(substraction)) {
 				accountService.updateCredit(originAccount.getId(), substraction.negate());
