@@ -46,7 +46,7 @@ public abstract class AbstractAccount {
 	public  String toString(){
 		ToStringCreator builder = new ToStringCreator( this );
 		builder.append("id",this.getId());
-	    builder.append( "initialCredit", this.getCredit());
+	    builder.append( "credit", this.getCredit());
 	    builder.append( "bank", this.getBank() );
 	    builder.append( "country", this.getOriginCountry() );
 	    return builder.toString();

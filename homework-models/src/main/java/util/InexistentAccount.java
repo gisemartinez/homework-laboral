@@ -1,4 +1,4 @@
-package throwable;
+package util;
 
 import enums.ErrorMessages;
 

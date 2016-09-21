@@ -17,27 +17,19 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd
 	<bean id="accountService" class="services.AccountService">
 	</bean>
 
-<!-- 	<bean id="transactionProductorCallable" class="asinchronysm.TransactionProductorCallable">
-		<property name="builderFactory" ref="builderFactory" />
-	</bean> -->
-
+<!-- 
 	<bean id="builderFactory" class="builders.BuilderFactory">
 	</bean>
 	<bean id="transactionBuilder" class="builders.BuilderFactory"
-		factory-method="getObject" factory-bean="builderFactory"></bean>
+		factory-method="getObject" factory-bean="builderFactory"></bean> -->
 
 	<bean id="transactionThreadManagement" class="asinchronysm.TransactionThreadManagement">
 	</bean>
-	<!-- <bean id="transactionBuilder" class="builders.TransactionBuilder"></bean> 
-		<bean id="transaction" class="builders.TransactionBuilder" factory-method="build" 
-		factory-bean="transactionBuilder"></bean> -->
-	<!-- <bean id="pfactory" class="com.javatpoint.PrintableFactory"></bean> 
-		<bean id="p" class="com.javatpoint.PrintableFactory" factory-method="getPrintable" 
-		factory-bean="pfactory"></bean> -->
-	<bean id="taskExecutor"
+
+	<!-- <bean id="taskExecutor"
 		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 		<property name="corePoolSize" value="5" />
 		<property name="maxPoolSize" value="10" />
 		<property name="WaitForTasksToCompleteOnShutdown" value="true" />
-	</bean>
+	</bean> -->
 </beans>

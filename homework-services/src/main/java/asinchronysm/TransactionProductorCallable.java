@@ -5,23 +5,22 @@ import java.util.concurrent.Callable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import builders.BuilderFactory;
 import builders.TransactionBuilder;
 import businessobjects.Transaction;
 import dtos.TransactionDto;
 import enums.TransactionStatus;
 import fixedresources.Resources;
+import services.AccountService;
 
 public class TransactionProductorCallable implements Callable<TransactionStatus> {
 
 	public final static Logger LOGGER = LogManager.getLogger(TransactionProductorCallable.class);
 
 	private Transaction transaction;
+	private AccountService accountService;
 
-	private BuilderFactory builderFactory;
-
-	public TransactionProductorCallable(TransactionDto transactionDto,BuilderFactory builderFactory) {
-		this.builderFactory = builderFactory;
+	public TransactionProductorCallable(TransactionDto transactionDto,AccountService accountService) {
+		this.accountService = accountService;
 		try {
 			this.transaction = buildTransaction(transactionDto);
 		} catch (Exception e) {
@@ -35,9 +34,12 @@ public class TransactionProductorCallable implements Callable<TransactionStatus>
 		TransactionConsumerCallable callable;
 		TransactionStatus status;
 		try {
-
-			callable = new TransactionConsumerCallable(this.transaction);
+			//La TareaDeInserción cuando está finalizada produce una tarea para consumir.
+			//La misma queda en cola, esperando ser ejecutada.
+			callable = new TransactionConsumerCallable(this.transaction,accountService);
+			
 			Resources.TRANSACTION_QUEUE.offer(callable);
+			
 			status = TransactionStatus.FINALIZA_ENCOLAMIENTO;
 
 		} catch (NullPointerException e) {
@@ -57,7 +59,7 @@ public class TransactionProductorCallable implements Callable<TransactionStatus>
 	 */
 	private synchronized Transaction buildTransaction(TransactionDto transactionDto) throws Exception {
 		
-		TransactionBuilder transactionBuilder = builderFactory.getObject();
+		TransactionBuilder transactionBuilder = new TransactionBuilder(accountService);
 		transactionBuilder.buildWithAmount(transactionDto.getMonto());
 
 		try {

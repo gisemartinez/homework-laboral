@@ -15,12 +15,14 @@ public class TransactionService {
 	private TransactionThreadManagement transactionThreadManagement;
 
 	public TransactionStatus receiveTransactions(TransactionDto dto) {
-		TransactionStatus status = TransactionStatus.INICIA_ENCOLAMIENTO;
+		TransactionStatus status = null;
+		
 		try {
 			status = transactionThreadManagement.queingTransactions(dto);
 		} catch (Exception e) {
 			LOGGER.error(e);
 		}
+		
 		if(TransactionStatus.FINALIZA_ENCOLAMIENTO.equals(status)){
 			try {
 				transactionThreadManagement.executeTransactions();

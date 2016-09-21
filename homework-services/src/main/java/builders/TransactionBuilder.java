@@ -6,7 +6,6 @@ import javax.naming.ServiceUnavailableException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import businessobjects.Account;
 import businessobjects.InternationalTransaction;
@@ -15,7 +14,7 @@ import businessobjects.Transaction;
 import enums.ErrorMessages;
 import fixedresources.Resources;
 import services.AccountService;
-import throwable.InexistentAccount;
+import util.InexistentAccount;
 
 /*
  * Caso ideal : Que me anduviera el autowired. Como no es un controller, 
@@ -29,9 +28,11 @@ public class TransactionBuilder {
 	private BigDecimal amount;
 	private Transaction transaction;
 	
-	@Autowired
 	private AccountService accountService;
 	
+	public TransactionBuilder(AccountService accountService){
+		this.accountService = accountService;
+	}
 	public TransactionBuilder buildWithAmount(BigDecimal amount) {
 		this.amount = amount;
 		this.accountOrigin = new Account();

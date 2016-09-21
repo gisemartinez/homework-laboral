@@ -3,8 +3,6 @@ package asinchronysm;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import businessobjects.Account;
 import businessobjects.Transaction;
 import enums.TransactionStatus;
@@ -12,13 +10,13 @@ import services.AccountService;
 
 public class TransactionConsumerCallable implements Callable<TransactionStatus> {
 
-	@Autowired
 	private AccountService accountService;
 
 	Transaction transaction;
 
-	public TransactionConsumerCallable(Transaction transaction) {
+	public TransactionConsumerCallable(Transaction transaction,AccountService accountService) {
 		this.transaction = transaction;
+		this.accountService = accountService;
 	}
 
 	@Override
