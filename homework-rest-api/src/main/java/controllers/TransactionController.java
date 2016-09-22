@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import dtos.TransactionDto;
 import enums.ErrorMessages;
 import enums.TransactionStatus;
-import services.TransactionService;
+import services.TransactionThreadService;
 
 @Controller
 @RequestMapping("/api")
 public class TransactionController {
 
 	@Autowired
-	private TransactionService transactionService;
+	private TransactionThreadService transactionThreadService;
 
 	public final static Logger LOGGER = LogManager.getLogger(TransactionController.class);
 
@@ -35,7 +35,7 @@ public class TransactionController {
 		try {
 			LOGGER.debug(transaction);
 
-			TransactionStatus response = transactionService.receiveTransactions(transaction);
+			TransactionStatus response = transactionThreadService.receiveAndProcessTransactions(transaction);
 
 			if (TransactionStatus.ERROR_INTERNO_ANTES_DE_ENCOLARSE.equals(response)) {
 

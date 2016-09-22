@@ -14,6 +14,20 @@
 	$ mvn clean install
 	$ cd homework-rest-api
 	$ spring-boot:run
+	
+	#Endpoints
+	GET : http://localhost:8080/api/accounts/
+	POST: http://localhost:8080/api/transaction
+		Exmaple payload : 
+		{
+		"originAccount":{
+			"id": 0
+		},
+		"destinationAccount":{
+			"id": 1
+		},
+			"monto":100
+		}
 
 ### Links útiles
 
@@ -25,3 +39,7 @@
 ####Spring Non-managed-beans
 		*
 	
+####Mejoras
+	El guardado en el archivo debería ser un poco más elegante
+	Usar un poco más Java 8, incluyendo las clases Consumer y Productor
+	Exponer en swagger los endpoints

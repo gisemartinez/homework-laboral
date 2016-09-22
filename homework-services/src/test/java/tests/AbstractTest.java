@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration ("file:src/main/resources/spring/spring-webcontext.xml")
+@ContextConfiguration ("file:src/test/resources/spring/spring-webcontext-test.xml")
 public abstract class AbstractTest {
 	
 	protected final Logger LOGGER = LogManager.getLogger(this.getClass());

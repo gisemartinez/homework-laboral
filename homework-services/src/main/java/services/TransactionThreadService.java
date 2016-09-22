@@ -8,13 +8,13 @@ import asinchronysm.TransactionThreadManagement;
 import dtos.TransactionDto;
 import enums.TransactionStatus;
 
-public class TransactionService {
-	public final static Logger LOGGER = LogManager.getLogger(TransactionService.class);
+public class TransactionThreadService {
+	public final static Logger LOGGER = LogManager.getLogger(TransactionThreadService.class);
 
 	@Autowired
 	private TransactionThreadManagement transactionThreadManagement;
 
-	public TransactionStatus receiveTransactions(TransactionDto dto) {
+	public TransactionStatus receiveAndProcessTransactions(TransactionDto dto) {
 		TransactionStatus status = null;
 		
 		try {
