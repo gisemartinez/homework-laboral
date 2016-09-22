@@ -19,7 +19,7 @@ public class TransactionThreadManagement {
 
 	private static ThreadPoolExecutor executeProductor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
 	private static ThreadPoolExecutor executeConsumer = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
-	public final static Logger LOGGER = LogManager.getLogger(TransactionThreadManagement.class);
+	public static final Logger LOGGER = LogManager.getLogger(TransactionThreadManagement.class);
 
 	/*
 	 * Gestión de transacciones ingresantes. Motivo: El ingreso, así como el
@@ -30,7 +30,7 @@ public class TransactionThreadManagement {
 
 	public TransactionStatus queingTransactions(TransactionDto dto) throws InterruptedException, ExecutionException {
 
-		TransactionProductorCallable transactionCallable;
+		TransactionProductorCallable transactionProductorCallable;
 
 		Future<TransactionStatus> result = null;
 
@@ -43,18 +43,18 @@ public class TransactionThreadManagement {
 
 		try {
 
-			transactionCallable = new TransactionProductorCallable(dto, accountService);
+			transactionProductorCallable = new TransactionProductorCallable(dto, accountService);
 
-			result = executeProductor.submit(transactionCallable);
+			result = executeProductor.submit(transactionProductorCallable);
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			LOGGER.error(e);
 
 		} finally {
 
-			transactionToText.setTransactionStatus(result.get());
-			transactionToText.writeFile();
+			transactionToText.setTransactionStatus(result.get()).writeFile();
+			
 			LOGGER.info("Status : " + result.get() + " && Task done is " + result.isDone());
 
 		}
@@ -62,8 +62,7 @@ public class TransactionThreadManagement {
 		return result.get();
 	}
 
-	// TODO: Debería devolver una transaccionstatus?
-	public void executeTransactions() throws InterruptedException, ExecutionException {
+	public TransactionStatus executeTransactions() throws InterruptedException, ExecutionException {
 
 		TransactionConsumerCallable operation;
 
@@ -77,14 +76,10 @@ public class TransactionThreadManagement {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
-
-		} finally {
-
-			LOGGER.info("Status : " + result.get() + " && Task done is " + result.isDone());
+			LOGGER.error(e);
 
 		}
+		return result.get();
 
-		//executeConsumer.shutdown();
 	}
 }

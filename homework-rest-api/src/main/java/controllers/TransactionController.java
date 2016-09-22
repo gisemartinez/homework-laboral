@@ -22,40 +22,55 @@ public class TransactionController {
 	@Autowired
 	private TransactionThreadService transactionThreadService;
 
-	public final static Logger LOGGER = LogManager.getLogger(TransactionController.class);
+	public static final Logger LOGGER = LogManager.getLogger(TransactionController.class);
 
 	/*
 	 * Cada transacción inicia un nuevo thread para insertar en la lista de
 	 * transacciones a procesar
 	 */
 	@RequestMapping(value = "/transaction", method = RequestMethod.POST)
-	public ResponseEntity<Void> receiveTransaction(@RequestBody TransactionDto transaction) {
+	public ResponseEntity<TransactionStatus> receiveTransaction(@RequestBody TransactionDto transaction) {
 
-		ResponseEntity<Void> status;
+		ResponseEntity<TransactionStatus> status;
 		try {
 			LOGGER.debug(transaction);
 
 			TransactionStatus response = transactionThreadService.receiveAndProcessTransactions(transaction);
 
-			if (TransactionStatus.ERROR_INTERNO_ANTES_DE_ENCOLARSE.equals(response)) {
+			if (TransactionStatus.FINALIZADA_OK.equals(response)) {
 
-				status = new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+				status = new ResponseEntity<>(response,HttpStatus.OK);
+			} else if (TransactionStatus.ERROR_INTERNO_ANTES_DE_ENCOLARSE.equals(response)) {
+
+				status = new ResponseEntity<>(response,HttpStatus.CONFLICT);
 
 			} else if (TransactionStatus.ERROR_EN_PARAMETROS_RECIBIDOS.equals(response)) {
 
-				status = new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+				status = new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
 
 			} else if (TransactionStatus.FINALIZA_ENCOLAMIENTO.equals(response)) {
 
-				status = new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+				status = new ResponseEntity<>(response,HttpStatus.ACCEPTED);
+
+			} else if (TransactionStatus.INICIA_PROCESAMIENTO.equals(response)) {
+
+				status = new ResponseEntity<>(response,HttpStatus.PROCESSING);
+
+			} else if (TransactionStatus.INTERRUPCION_AL_PROCESAR.equals(response)) {
+
+				status = new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+
+			} else if (TransactionStatus.FINALIZADA_NOK.equals(response)) {
+
+				status = new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
 
 			} else {
 
-				status = new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+				status = new ResponseEntity<>(response,HttpStatus.NOT_IMPLEMENTED);
 			}
 
 		} catch (Exception e) {
-			status = new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			status = new ResponseEntity<>(TransactionStatus.ERROR_DESCONOCIDO,HttpStatus.INTERNAL_SERVER_ERROR);
 			LOGGER.error(ErrorMessages.TRANSACCION_INVALIDA, e);
 		}
 		return status;

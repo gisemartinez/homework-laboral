@@ -21,18 +21,19 @@ import util.InexistentAccount;
  * y lo instancio para usarlo, spring no puede hacer la inyeccion de dependencia. 
  */
 public class TransactionBuilder {
-	
-	public final static Logger LOGGER = LogManager.getLogger(TransactionBuilder.class);
+
+	public static final Logger LOGGER = LogManager.getLogger(TransactionBuilder.class);
 	private Account accountOrigin;
 	private Account accountDestiny;
 	private BigDecimal amount;
 	private Transaction transaction;
-	
+
 	private AccountService accountService;
-	
-	public TransactionBuilder(AccountService accountService){
+
+	public TransactionBuilder(AccountService accountService) {
 		this.accountService = accountService;
 	}
+
 	public TransactionBuilder buildWithAmount(BigDecimal amount) {
 		this.amount = amount;
 		this.accountOrigin = new Account();
@@ -40,6 +41,7 @@ public class TransactionBuilder {
 		return this;
 
 	}
+
 	public TransactionBuilder buildWithOriginAccount(int id) throws InexistentAccount {
 
 		try {

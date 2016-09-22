@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import asinchronysm.TransactionThreadManagement;
 import dtos.TransactionDto;
 import enums.TransactionStatus;
+import util.TransactionToText;
 
 public class TransactionThreadService {
-	public final static Logger LOGGER = LogManager.getLogger(TransactionThreadService.class);
+	public static final Logger LOGGER = LogManager.getLogger(TransactionThreadService.class);
 
 	@Autowired
 	private TransactionThreadManagement transactionThreadManagement;
@@ -25,13 +26,17 @@ public class TransactionThreadService {
 		
 		if(TransactionStatus.FINALIZA_ENCOLAMIENTO.equals(status)){
 			try {
-				transactionThreadManagement.executeTransactions();
+				status = transactionThreadManagement.executeTransactions();
 			} catch (Exception e) {
 				status = TransactionStatus.FINALIZADA_NOK;
 				LOGGER.error(e);
 			}		
 		}
-		 
+		
+		TransactionToText transactionToText = new TransactionToText(dto.getOriginAccount(), dto.getDestinationAccount(), status);
+		
+		transactionToText.writeFile();
+		
 		return status;
 	}
 }

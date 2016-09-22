@@ -13,14 +13,14 @@ import services.AccountService;
 import util.TransactionToText;
 
 public class TransactionConsumerCallable implements Callable<TransactionStatus> {
-	
-	public final static Logger LOGGER = LogManager.getLogger(TransactionConsumerCallable.class);
-	
+
+	public static final Logger LOGGER = LogManager.getLogger(TransactionConsumerCallable.class);
+
 	private AccountService accountService;
 
 	Transaction transaction;
 
-	public TransactionConsumerCallable(Transaction transaction,AccountService accountService) {
+	public TransactionConsumerCallable(Transaction transaction, AccountService accountService) {
 		this.transaction = transaction;
 		this.accountService = accountService;
 	}
@@ -28,44 +28,46 @@ public class TransactionConsumerCallable implements Callable<TransactionStatus> 
 	@Override
 	public TransactionStatus call() throws Exception {
 
-		return succesfullOperation(transaction) ? TransactionStatus.FINALIZADA_OK : TransactionStatus.FINALIZADA_NOK;
-	}
-	//TODO: Pulir la lógica. Es poco legible.
-	private synchronized boolean succesfullOperation(Transaction transaction) {
-		
-		
 		TransactionStatus operation = TransactionStatus.INICIA_PROCESAMIENTO;
 
-		TransactionToText transactionToText = new TransactionToText(transaction.getOriginAccount(), transaction.getDestinationAccount(), operation);
+		TransactionToText transactionToText = new TransactionToText(transaction.getOriginAccount(),
+				transaction.getDestinationAccount(), operation);
 
-		try {
-			transactionToText.writeFile();
-		} catch (Exception e) {
-			LOGGER.error(e);
-		}
-		
-		boolean successfull = false;
+		transactionToText.writeFile();
+
+		operation = updateAccountsCredit(transaction);
+
+		transactionToText.setTransactionStatus(operation).writeFile();
+
+		return operation;
+	}
+
+	private synchronized TransactionStatus updateAccountsCredit(Transaction transaction) {
 
 		BigDecimal substraction = transaction.calcularImpuesto().add(transaction.getMonto());
 		BigDecimal addition = transaction.getMonto();
-		
+		TransactionStatus operation;
+		Account originAccount = transaction.getOriginAccount();
+		Account destinyAccount = transaction.getDestinationAccount();
+
 		try {
 
-			Account originAccount = transaction.getOriginAccount();
-			Account destinyAccount = transaction.getDestinationAccount();
-
 			if (originAccount.isDebitLessThanActualCredit(substraction)) {
+				
 				accountService.updateCredit(originAccount.getId(), substraction.negate());
 				accountService.updateCredit(destinyAccount.getId(), addition);
-				successfull = true;
+				operation = TransactionStatus.FINALIZADA_OK;
+				
+			} else {
+				operation = TransactionStatus.FONDOS_INSUFICIENTES;
 			}
 
 		} catch (Exception e) {
-			e.getMessage();
-			throw e;
+			LOGGER.error(e);
+			operation = TransactionStatus.ERROR_DE_ACTUALIZACION_A_CUENTAS;
 		}
 
-		return successfull;
+		return operation;
 	}
 
 }
