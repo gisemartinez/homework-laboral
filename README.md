@@ -1,4 +1,4 @@
-# Problema del consumidor y productor. 
+# Implementación de pattern consumidor/productor. 
 
 
 
@@ -34,8 +34,8 @@
 ####Motivos para usar LinkedBlockigQueue: 
 		*http://www.concretepage.com/java/linkedblockingqueue_java
 		*https://examples.javacodegeeks.com/core-java/util/concurrent/linkedblockingqueue/java-util-concurrent-linkedblockingqueue-example/
-####Ejemplos útiles
-		*
+####Usos de Java 8 para concurrencia
+		*http://winterbe.com/posts/2015/04/07/java8-concurrency-tutorial-thread-executor-examples/
 ####Spring Non-managed-beans
 		*
 	
