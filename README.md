@@ -43,3 +43,4 @@
 	El guardado en el archivo debería ser un poco más elegante
 	Usar un poco más Java 8, incluyendo las clases Consumer y Productor
 	Exponer en swagger los endpoints
+	Poner en Redis o en un archivo de propertys countries y banks, así como el path al archivo que se obtiene. 
